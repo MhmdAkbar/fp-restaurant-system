@@ -27,15 +27,20 @@ func (c *Controller) Register(ctx *gin.Context) {
 		return
 	}
 
-	err := c.service.Register(input.Name, input.Email, input.Password, usermodels.UserRole(input.Role))
+	// Dapatkan user setelah insert
+	user, err := c.service.Register(input.Name, input.Email, input.Password, usermodels.UserRole(input.Role))
 	if err != nil {
 		helpers.ResponseError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
 	result := dto.RegisterResponse{
-		Name: input.Name,
+		ID:    user.ID,
+		Name:  user.Name,
+		Email: user.Email,
+		Role:  string(user.Role),
 	}
+
 	helpers.ResponseSuccess(ctx, http.StatusOK, "register sukses", result)
 }
 
@@ -51,9 +56,9 @@ func (c *Controller) Login(ctx *gin.Context) {
 		helpers.ResponseError(ctx, http.StatusUnauthorized, err)
 		return
 	}
-	token, err :=helpers.GenerateToken(user.ID,user.Name,user.Email,string(user.Role))
+	token, err := helpers.GenerateToken(user.ID, user.Name, user.Email, string(user.Role))
 	if err != nil {
-		helpers.ResponseError(ctx,http.StatusInternalServerError, err)
+		helpers.ResponseError(ctx, http.StatusInternalServerError, err)
 	}
 	result := dto.LoginResponse{
 		ID:    user.ID,
@@ -126,7 +131,7 @@ func (c *Controller) UpdateProfile(ctx *gin.Context) {
 	helpers.ResponseSuccess(ctx, http.StatusOK, "profile updated successfully", result)
 }
 
-func (c *Controller) DeleteProfile (ctx *gin.Context) {
+func (c *Controller) DeleteProfile(ctx *gin.Context) {
 	idParam := ctx.Param("id")
 
 	if idParam == "" {
@@ -139,8 +144,7 @@ func (c *Controller) DeleteProfile (ctx *gin.Context) {
 	if err != nil {
 		helpers.ResponseError(ctx, http.StatusBadRequest, fmt.Errorf("id tidak valid"))
 		return
-	}	
+	}
 	c.service.DeleteProfile(id)
 	helpers.ResponseSuccess(ctx, http.StatusOK, "success", nil)
 }
-

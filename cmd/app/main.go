@@ -3,26 +3,21 @@ package main
 import (
 	"aplikasi_restoran/config"
 	"aplikasi_restoran/database"
-	usercontroller "aplikasi_restoran/internal/controllers/user"
-	repoitories "aplikasi_restoran/internal/repositories/user"
+	bootstrap "aplikasi_restoran/init"
 	"aplikasi_restoran/internal/routes"
-	userservice "aplikasi_restoran/internal/services/user"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	config.Init()
-	db := database.NewMySqlConnection(config.GetDSN()) // mengambil string dsn dari .env
+	db := database.NewMySqlConnection(config.GetDSN())
 	database.RunMigration(db)
 
-	repo := repoitories.NewUserRepository(db)
-	service := userservice.NewUserService(repo)
-	controller := usercontroller.NewController(service) // panggil konstruktor yang benar
+	modules := bootstrap.InitModules(db)
 
-	router := gin.Default()
+	r := gin.Default()
+	routes.UserRoutes(r, modules.UserController)
 
-	routes.UserRoutes(router, controller)
-	port := config.GetAppPort()
-	router.Run(port)
+	r.Run(config.GetAppPort())
 }

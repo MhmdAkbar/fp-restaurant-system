@@ -16,22 +16,24 @@ func NewUserService(repo repositories.UserRepository) UserService {
 	return &userService{repo}
 }
 
-func (s *userService) Register(name, email, pass string, role usermodels.UserRole) error {
+func (s *userService) Register(name, email, pass string, role usermodels.UserRole) (*usermodels.User ,error) {
 
 	hashed, err := helpers.HashPassword(pass)
 	if err != nil {
-		return err
+		return nil,err
 	}
+user := usermodels.User{
+        Name:     name,
+        Email:    email,
+        Password: hashed,
+        Role:     role,
+    }
 
-	user := usermodels.User{
-		Name:     name,
-		Email:    email,
-		Password: hashed,
-		Role:     role,
-	}
+    if err := s.repo.Create(&user); err != nil {
+        return nil, err
+    }
 
-	return s.repo.Create(&user)
-}
+    return &user, nil}
 
 func (s *userService) Login(email, pass string) (*usermodels.User, error) {
 	user, err := s.repo.FindByEmail(email)
