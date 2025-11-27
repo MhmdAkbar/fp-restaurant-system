@@ -12,17 +12,17 @@ import (
 )
 
 func main() {
-	config.LoadEnv()
-	db := database.NewMySqlConnection(config.GetDSN()) // now returns *gorm.DB
+	config.Init()
+	db := database.NewMySqlConnection(config.GetDSN()) // mengambil string dsn dari .env
 	database.RunMigration(db)
 
-	repo := repoitories.NewUserRepository(db) // gunakan koneksi nyata
+	repo := repoitories.NewUserRepository(db)
 	service := userservice.NewUserService(repo)
-	controller := usercontroller.New(service) // panggil konstruktor yang benar
+	controller := usercontroller.NewController(service) // panggil konstruktor yang benar
 
 	router := gin.Default()
 
 	routes.UserRoutes(router, controller)
-
-	router.Run(":8080")
+	port := config.GetAppPort()
+	router.Run(port)
 }

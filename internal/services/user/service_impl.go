@@ -1,47 +1,77 @@
 package userservice
 
 import (
-	"aplikasi_restoran/internal/models"
-	repoitories "aplikasi_restoran/internal/repositories/user"
-	"errors"
+	helpers "aplikasi_restoran/internal/helper"
+	usermodels "aplikasi_restoran/internal/models/user"
+	repositories "aplikasi_restoran/internal/repositories/user"
 
-	"golang.org/x/crypto/bcrypt"
+	"errors"
 )
 
-type userService struct { // implementasi interface
-	repo repoitories.UserRepository
+type userService struct {
+	repo repositories.UserRepository
 }
 
-func NewUserService(repo repoitories.UserRepository) UserService { // return interface
+func NewUserService(repo repositories.UserRepository) UserService {
 	return &userService{repo}
 }
 
-func (s *userService) Register(name, email, pass string, role models.UserRole) error {
-	hash, _ := bcrypt.GenerateFromPassword([]byte(pass), bcrypt.DefaultCost)
+func (s *userService) Register(name, email, pass string, role usermodels.UserRole) error {
 
-	user := models.User{
+	hashed, err := helpers.HashPassword(pass)
+	if err != nil {
+		return err
+	}
+
+	user := usermodels.User{
 		Name:     name,
 		Email:    email,
-		Password: string(hash),
+		Password: hashed,
 		Role:     role,
 	}
 
 	return s.repo.Create(&user)
 }
 
-func (s *userService) Login(email, pass string) (*models.User, error) {
+func (s *userService) Login(email, pass string) (*usermodels.User, error) {
 	user, err := s.repo.FindByEmail(email)
 	if err != nil {
 		return nil, errors.New("email atau password salah")
 	}
 
-	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(pass)) != nil {
+	if !helpers.CheckPasswordHash(user.Password, pass) {
 		return nil, errors.New("email atau password salah")
 	}
 
 	return user, nil
 }
 
-func (s *userService) GetProfile(id uint) (*models.User, error) {
+func (s *userService) GetProfile(id uint) (*usermodels.User, error) {
 	return s.repo.FindByID(id)
 }
+
+func (s *userService) UpdateProfile(id uint, name, email string) (*usermodels.User, error) {
+	user, err := s.repo.FindByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	user.Name = name
+	user.Email = email
+
+	err = s.repo.Update(user)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func (s *userService) DeleteProfile (id uint) error {
+	user, err := s.repo.FindByID(id)
+	if err != nil {
+		return err
+	}
+	return s.repo.Delete(user)
+}
+

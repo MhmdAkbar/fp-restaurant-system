@@ -1,83 +1,146 @@
 package usercontroller
 
 import (
-	"aplikasi_restoran/internal/models"
+	"aplikasi_restoran/internal/dto"
+	helpers "aplikasi_restoran/internal/helper"
+	usermodels "aplikasi_restoran/internal/models/user"
 	userservice "aplikasi_restoran/internal/services/user"
 	"fmt"
-	"net/http" // http response
+	"net/http"
 
-	"github.com/gin-gonic/gin" // framework gin
+	"github.com/gin-gonic/gin"
 )
 
-type Controller struct { // controller user
+type Controller struct {
 	service userservice.UserService
 }
 
-func New(service userservice.UserService) *Controller {
-	return &Controller{service} // buat instance
+func NewController(service userservice.UserService) *Controller {
+	return &Controller{service}
 }
 
-func (c *Controller) Register(ctx *gin.Context) { // handler register
-	var input struct { // input JSON
-		Name     string `json:"name"`     // nama
-		Email    string `json:"email"`    // email
-		Password string `json:"password"` // password
-		Role     string `json:"role"`     // role
-	}
+func (c *Controller) Register(ctx *gin.Context) {
+	var input dto.RegisterRequest
 
-	if err := ctx.ShouldBindJSON(&input); err != nil { // parsing JSON
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()}) // error parsing
+	if err := ctx.ShouldBindJSON(&input); err != nil {
+		helpers.ResponseError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
-	err := c.service.Register(input.Name, input.Email, input.Password, models.UserRole(input.Role)) // panggil service
-	if err != nil {                                                                                 // cek error service
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()}) // error service
+	err := c.service.Register(input.Name, input.Email, input.Password, usermodels.UserRole(input.Role))
+	if err != nil {
+		helpers.ResponseError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "register sukses"}) // respon sukses
+	result := dto.RegisterResponse{
+		Name: input.Name,
+	}
+	helpers.ResponseSuccess(ctx, http.StatusOK, "register sukses", result)
 }
 
-func (c *Controller) Login(ctx *gin.Context) { // handler login
-	var input struct { // input JSON
-		Email    string `json:"email"`    // email
-		Password string `json:"password"` // password
-	}
-
-	if err := ctx.ShouldBindJSON(&input); err != nil { // parsing JSON
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()}) // error
+func (c *Controller) Login(ctx *gin.Context) {
+	var input dto.LoginRequest
+	if err := ctx.ShouldBindJSON(&input); err != nil {
+		helpers.ResponseError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
-	user, err := c.service.Login(input.Email, input.Password) // panggil service
-	if err != nil {                                           // login gagal
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()}) // 401
+	user, err := c.service.Login(input.Email, input.Password)
+	if err != nil {
+		helpers.ResponseError(ctx, http.StatusUnauthorized, err)
 		return
 	}
+	token, err :=helpers.GenerateToken(user.ID,user.Name,user.Email,string(user.Role))
+	if err != nil {
+		helpers.ResponseError(ctx,http.StatusInternalServerError, err)
+	}
+	result := dto.LoginResponse{
+		ID:    user.ID,
+		Name:  user.Name,
+		Email: user.Email,
+		Role:  string(user.Role),
+		Token: token,
+	}
 
-	ctx.JSON(http.StatusOK, gin.H{"user": user}) // respon user
+	helpers.ResponseSuccess(ctx, http.StatusOK, "success login", result)
 }
 
-func (c *Controller) GetProfile(ctx *gin.Context) { // handler get user by id
-	idParam := ctx.Param("id") // ambil parameter id dari URL
-	if idParam == "" {         // cek kosong
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "id wajib diisi"}) // respon error
-		return                                                            // stop eksekusi
-	}
+func (c *Controller) GetProfile(ctx *gin.Context) {
+	idParam := ctx.Param("id")
 
-	var id uint                       // siapkan variabel id uint
-	_, err := fmt.Sscan(idParam, &id) // convert string ke uint
-	if err != nil {                   // cek salah konversi
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "id tidak valid"}) // error
-		return                                                            // stop
-	}
-
-	user, err := c.service.GetProfile(id) // panggil service
-	if err != nil {                       // cek jika tidak ditemukan
-		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()}) // error 404
+	if idParam == "" {
+		helpers.ResponseError(ctx, http.StatusBadRequest, fmt.Errorf("id wajib diisi"))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"user": user}) // respon sukses
+	var id uint
+	_, err := fmt.Sscan(idParam, &id)
+	if err != nil {
+		helpers.ResponseError(ctx, http.StatusBadRequest, fmt.Errorf("id tidak valid"))
+		return
+	}
+
+	user, err := c.service.GetProfile(id)
+	if err != nil {
+		helpers.ResponseError(ctx, http.StatusNotFound, err)
+		return
+	}
+
+	helpers.ResponseSuccess(ctx, http.StatusOK, "success", user)
 }
+
+func (c *Controller) UpdateProfile(ctx *gin.Context) {
+	idParam := ctx.Param("id")
+
+	if idParam == "" {
+		helpers.ResponseError(ctx, http.StatusBadRequest, fmt.Errorf("id wajib diisi"))
+		return
+	}
+
+	var id uint
+	_, err := fmt.Sscan(idParam, &id)
+	if err != nil {
+		helpers.ResponseError(ctx, http.StatusBadRequest, fmt.Errorf("id tidak valid"))
+		return
+	}
+
+	var input dto.UpdateProfileRequest
+	if err := ctx.ShouldBindJSON(&input); err != nil {
+		helpers.ResponseError(ctx, http.StatusBadRequest, err)
+		return
+	}
+
+	updated, err := c.service.UpdateProfile(id, input.Name, input.Email)
+	if err != nil {
+		helpers.ResponseError(ctx, http.StatusInternalServerError, err)
+		return
+	}
+
+	result := dto.UpdateProfileResponse{
+		ID:    updated.ID,
+		Name:  updated.Name,
+		Email: updated.Email,
+	}
+
+	helpers.ResponseSuccess(ctx, http.StatusOK, "profile updated successfully", result)
+}
+
+func (c *Controller) DeleteProfile (ctx *gin.Context) {
+	idParam := ctx.Param("id")
+
+	if idParam == "" {
+		helpers.ResponseError(ctx, http.StatusBadRequest, fmt.Errorf("id wajib diisi"))
+		return
+	}
+
+	var id uint
+	_, err := fmt.Sscan(idParam, &id)
+	if err != nil {
+		helpers.ResponseError(ctx, http.StatusBadRequest, fmt.Errorf("id tidak valid"))
+		return
+	}	
+	c.service.DeleteProfile(id)
+	helpers.ResponseSuccess(ctx, http.StatusOK, "success", nil)
+}
+
