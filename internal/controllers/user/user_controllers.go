@@ -146,5 +146,5 @@ func (c *UserController) DeleteProfile(ctx *gin.Context) {
 		return
 	}
 	c.service.DeleteProfile(id)
-	helpers.ResponseSuccess(ctx, http.StatusOK, "success", nil)
+	helpers.ResponseSuccess(ctx, http.StatusOK, "success delete user", nil)
 }

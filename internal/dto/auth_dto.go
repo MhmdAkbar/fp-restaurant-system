@@ -28,8 +28,8 @@ type RegisterResponse struct {
 }
 
 type UpdateProfileRequest struct {
-	Name  string `json:"name" binding:"required"`
-	Email string `json:"email" binding:"required,email"`
+	Name     string `json:"name" binding:"required"`
+	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required,min=6"`
 }
 
@@ -39,16 +39,16 @@ type UpdateProfileResponse struct {
 	Email string `json:"email"`
 }
 
-type AddTableRequest struct {
-	Id uint `json:"id"`
-	TableNumber uint `json:"table_number"`
-	QrCode string `json:"qr_code"`
-	Available bool `json:"avaliable"`
+type TableRequest struct {
+	Id        uint   `json:"id"`
+	TableCode string `json:"table_code"`
+	QrCode    string `json:"qr_code"`
+	Status    bool   `json:"status"`
 }
 
-type AddTableResponse struct {
-	TableNumber uint `json:"table_number"`
-	QrCode string `json:"qr_code"`
-	Available bool `json:"avaliable"`
+type TableResponse struct {
+	Id        uint   `json:"id"`
+	TableCode string `json:"table_number"`
+	QrCode    string `json:"qr_code"`
+	Status    bool   `json:"status"`
 }
-

@@ -3,29 +3,28 @@ package routes
 import (
 	usercontroller "aplikasi_restoran/internal/controllers/user"
 	"aplikasi_restoran/internal/middlewares"
-
-	"github.com/gin-gonic/gin" // framework gin
+	"github.com/gin-gonic/gin"
 )
 
 func UserRoutes(r *gin.Engine, uc *usercontroller.UserController) {
-	user := r.Group("/users")
+	users := r.Group("/users")
+
+	// Public
+	users.POST("/login", uc.Login)
+
+	// Authorized user routes
+	usersAuth := users.Group("")
+	usersAuth.Use(middlewares.AuthMiddleware())
 	{
-		user.POST("/login", uc.Login)
+		usersAuth.GET("/:id", middlewares.VerifyUserAccess(), uc.GetProfile)
+		usersAuth.PATCH("/:id", middlewares.VerifyUserAccess(), uc.UpdateProfile)
+	}
 
-		// Protected routes (hanya pemilik akun atau super_admin)
-		protected := user.Group("/")
-		protected.Use(middlewares.AuthMiddleware())
-		{
-			protected.GET("/:id", middlewares.VerifyUserAccess(), uc.GetProfile)
-			protected.PATCH("/:id/update", middlewares.VerifyUserAccess(), uc.UpdateProfile)
-		}
-
-		// Super admin only
-		admin := user.Group("/")
-		admin.Use(middlewares.AuthMiddleware(), middlewares.Role("super_admin"))
-		{
-			admin.DELETE("/:id/delete", uc.DeleteProfile)
-			admin.POST("/register", uc.Register)
-		}
+	// Super admin only
+	admin := users.Group("")
+	admin.Use(middlewares.AuthMiddleware(), middlewares.Role("super_admin"))
+	{
+		admin.POST("", uc.Register)     // Create new user
+		admin.DELETE("/:id", uc.DeleteProfile)
 	}
 }
