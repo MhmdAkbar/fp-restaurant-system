@@ -39,3 +39,16 @@ type UpdateProfileResponse struct {
 	Email string `json:"email"`
 }
 
+type AddTableRequest struct {
+	Id uint `json:"id"`
+	TableNumber uint `json:"table_number"`
+	QrCode string `json:"qr_code"`
+	Available bool `json:"avaliable"`
+}
+
+type AddTableResponse struct {
+	TableNumber uint `json:"table_number"`
+	QrCode string `json:"qr_code"`
+	Available bool `json:"avaliable"`
+}
+

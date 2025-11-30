@@ -21,6 +21,7 @@ func VerifyUserAccess() gin.HandlerFunc {
 		}
 
 		uidFromToken, ok := uidValue.(uint)
+		println("uidfromtoken :", uidFromToken)
 		if !ok {
 			helpers.ResponseError(ctx, http.StatusUnauthorized, errors.New("invalid user id type"))
 			ctx.Abort()

@@ -1,19 +1,22 @@
 package middlewares
 
 import (
+	helpers "aplikasi_restoran/internal/helper"
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 func Role(role string) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		userRole, ok := c.Get("user_role")
+	return func(ctx *gin.Context) {
+		roleNow := "hanya role " + role
+		userRole, ok := ctx.Get("user_role")
 		if !ok || userRole != role {
-			c.JSON(http.StatusForbidden, gin.H{"message": "forbidden"})
-			c.Abort()
+			helpers.ResponseError(ctx, http.StatusForbidden, errors.New(roleNow))
+			ctx.Abort()
 			return
 		}
-		c.Next()
+		ctx.Next()
 	}
 }

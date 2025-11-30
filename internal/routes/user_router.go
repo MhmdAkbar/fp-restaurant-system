@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin" // framework gin
 )
 
-func UserRoutes(r *gin.Engine, uc *usercontroller.Controller) {
+func UserRoutes(r *gin.Engine, uc *usercontroller.UserController) {
 	user := r.Group("/users")
 	{
 		user.POST("/login", uc.Login)
@@ -17,7 +17,7 @@ func UserRoutes(r *gin.Engine, uc *usercontroller.Controller) {
 		protected.Use(middlewares.AuthMiddleware())
 		{
 			protected.GET("/:id", middlewares.VerifyUserAccess(), uc.GetProfile)
-			protected.PUT("/:id/update", middlewares.VerifyUserAccess(), uc.UpdateProfile)
+			protected.PATCH("/:id/update", middlewares.VerifyUserAccess(), uc.UpdateProfile)
 		}
 
 		// Super admin only

@@ -36,9 +36,9 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		// Simpan data claim ke context (TANPA float64 lagi)
-		ctx.Set("user_id", claims.ID)
+		ctx.Set("user_id", claims.Id)
 		ctx.Set("user_role", claims.Role)
-		fmt.Println("User ID from token auth:", claims.ID)
+		fmt.Println("User ID from token auth:", claims.Id)
 
 		ctx.Next()
 	}

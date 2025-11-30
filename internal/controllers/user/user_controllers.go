@@ -11,15 +11,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type Controller struct {
+type UserController struct {
 	service userservice.UserService
 }
 
-func NewController(service userservice.UserService) *Controller {
-	return &Controller{service}
+func NewController(service userservice.UserService) *UserController {
+	return &UserController{service}
 }
 
-func (c *Controller) Register(ctx *gin.Context) {
+func (c *UserController) Register(ctx *gin.Context) {
 	var input dto.RegisterRequest
 
 	if err := ctx.ShouldBindJSON(&input); err != nil {
@@ -44,7 +44,7 @@ func (c *Controller) Register(ctx *gin.Context) {
 	helpers.ResponseSuccess(ctx, http.StatusOK, "register sukses", result)
 }
 
-func (c *Controller) Login(ctx *gin.Context) {
+func (c *UserController) Login(ctx *gin.Context) {
 	var input dto.LoginRequest
 	if err := ctx.ShouldBindJSON(&input); err != nil {
 		helpers.ResponseError(ctx, http.StatusBadRequest, err)
@@ -71,7 +71,7 @@ func (c *Controller) Login(ctx *gin.Context) {
 	helpers.ResponseSuccess(ctx, http.StatusOK, "success login", result)
 }
 
-func (c *Controller) GetProfile(ctx *gin.Context) {
+func (c *UserController) GetProfile(ctx *gin.Context) {
 	idParam := ctx.Param("id")
 
 	if idParam == "" {
@@ -95,7 +95,7 @@ func (c *Controller) GetProfile(ctx *gin.Context) {
 	helpers.ResponseSuccess(ctx, http.StatusOK, "success", user)
 }
 
-func (c *Controller) UpdateProfile(ctx *gin.Context) {
+func (c *UserController) UpdateProfile(ctx *gin.Context) {
 	idParam := ctx.Param("id")
 
 	if idParam == "" {
@@ -131,7 +131,7 @@ func (c *Controller) UpdateProfile(ctx *gin.Context) {
 	helpers.ResponseSuccess(ctx, http.StatusOK, "profile updated successfully", result)
 }
 
-func (c *Controller) DeleteProfile(ctx *gin.Context) {
+func (c *UserController) DeleteProfile(ctx *gin.Context) {
 	idParam := ctx.Param("id")
 
 	if idParam == "" {
