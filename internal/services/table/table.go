@@ -1,12 +1,11 @@
 package tableservice
 
-import tablemodels "aplikasi_restoran/internal/models/tables"
-
+import "aplikasi_restoran/internal/models"
 
 type TableService interface {
-	AddTable(qrCode string, status bool) (*tablemodels.Table, error)
-	GetTable(id uint) (*tablemodels.Table, error)
-	GetAll() ([]tablemodels.Table, error)
-	UpdateTable(id uint, qrCode string, status bool) (*tablemodels.Table, error)
-	UpdateStatus(id uint, status bool) (*tablemodels.Table, error)
+	AddTable(qrCode string, status bool) (*models.Table, error)
+	GetTable(id uint) (*models.Table, error)
+	GetAll() ([]models.Table, error)
+	UpdateTable(id uint, qrCode string, status bool) (*models.Table, error)
+	UpdateStatus(id uint, status bool) (*models.Table, error)
 }

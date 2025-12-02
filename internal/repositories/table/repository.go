@@ -1,10 +1,12 @@
 package tablerepository
 
-import tablemodels "aplikasi_restoran/internal/models/tables"
+import (
+	"aplikasi_restoran/internal/models"
+)
 
 type TableRepository interface {
-	Create(table *tablemodels.Table) error
-	FindAll() ([]tablemodels.Table, error)
-	FindById(id uint) (*tablemodels.Table, error)
-	Update(table *tablemodels.Table) error
+	Create(table *models.Table) error
+	FindAll() ([]models.Table, error)
+	FindById(id uint) (*models.Table, error)
+	Update(table *models.Table) error
 }

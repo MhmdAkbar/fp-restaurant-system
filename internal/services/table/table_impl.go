@@ -1,9 +1,9 @@
 package tableservice
 
 import (
-	"fmt"
-	tablemodels "aplikasi_restoran/internal/models/tables"
+	"aplikasi_restoran/internal/models"
 	tablerepository "aplikasi_restoran/internal/repositories/table"
+	"fmt"
 )
 
 
@@ -15,8 +15,8 @@ func NewTableService(repo tablerepository.TableRepository) TableService {
 	return &tableService{repo}
 }
 
-func (s *tableService) AddTable(qrCode string, status bool) (*tablemodels.Table, error) {
-	table := tablemodels.Table{
+func (s *tableService) AddTable(qrCode string, status bool) (*models.Table, error) {
+	table := models.Table{
 		QrCode: qrCode,
 		Status: status,
 	}
@@ -37,15 +37,15 @@ func (s *tableService) AddTable(qrCode string, status bool) (*tablemodels.Table,
 	return &table, nil
 }
 
-func (s *tableService) GetTable(id uint) (*tablemodels.Table, error) {
+func (s *tableService) GetTable(id uint) (*models.Table, error) {
 	return s.repo.FindById(id)
 }
 
-func (s *tableService) GetAll() ([]tablemodels.Table, error) {
+func (s *tableService) GetAll() ([]models.Table, error) {
 	return s.repo.FindAll()
 }
 
-func (s *tableService) UpdateTable(id uint, qrCode string, status bool) (*tablemodels.Table, error) {
+func (s *tableService) UpdateTable(id uint, qrCode string, status bool) (*models.Table, error) {
 	table, err := s.repo.FindById(id)
 	if err != nil {
 		return nil, err
@@ -57,7 +57,7 @@ func (s *tableService) UpdateTable(id uint, qrCode string, status bool) (*tablem
 	return table, s.repo.Update(table)
 }
 
-func (s *tableService) UpdateStatus(id uint, status bool) (*tablemodels.Table, error) {
+func (s *tableService) UpdateStatus(id uint, status bool) (*models.Table, error) {
 	table, err := s.repo.FindById(id)
 	if err != nil {
 		return nil, err

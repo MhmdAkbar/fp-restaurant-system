@@ -2,9 +2,8 @@ package userservice
 
 import (
 	helpers "aplikasi_restoran/internal/helper"
-	usermodels "aplikasi_restoran/internal/models/user"
+	"aplikasi_restoran/internal/models"
 	repositories "aplikasi_restoran/internal/repositories/user"
-
 	"errors"
 )
 
@@ -16,13 +15,13 @@ func NewUserService(repo repositories.UserRepository) UserService {
 	return &userService{repo}
 }
 
-func (s *userService) Register(name, email, pass string, role usermodels.UserRole) (*usermodels.User ,error) {
+func (s *userService) Register(name, email, pass string, role models.UserRole) (*models.User ,error) {
 
 	hashed, err := helpers.HashPassword(pass)
 	if err != nil {
 		return nil,err
 	}
-user := usermodels.User{
+user := models.User{
         Name:     name,
         Email:    email,
         Password: hashed,
@@ -35,7 +34,7 @@ user := usermodels.User{
 
     return &user, nil}
 
-func (s *userService) Login(email, pass string) (*usermodels.User, error) {
+func (s *userService) Login(email, pass string) (*models.User, error) {
 	user, err := s.repo.FindByEmail(email)
 	if err != nil {
 		return nil, errors.New("email atau password salah")
@@ -48,11 +47,11 @@ func (s *userService) Login(email, pass string) (*usermodels.User, error) {
 	return user, nil
 }
 
-func (s *userService) GetProfile(id uint) (*usermodels.User, error) {
+func (s *userService) GetProfile(id uint) (*models.User, error) {
 	return s.repo.FindByID(id)
 }
 
-func (s *userService) UpdateProfile(id uint, name, email string) (*usermodels.User, error) {
+func (s *userService) UpdateProfile(id uint, name, email string) (*models.User, error) {
 	user, err := s.repo.FindByID(id)
 	if err != nil {
 		return nil, err
@@ -76,4 +75,3 @@ func (s *userService) DeleteProfile (id uint) error {
 	}
 	return s.repo.Delete(user)
 }
-

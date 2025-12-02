@@ -18,6 +18,7 @@ func main() {
 	r := gin.Default()
 	routes.UserRoutes(r, modules.UserController)
 	routes.TableRouter(r, modules.TableController)
+	routes.MenuRouter(r,modules.MenuController)
 
 	r.Run(config.GetAppPort())
 }

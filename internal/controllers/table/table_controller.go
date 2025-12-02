@@ -4,10 +4,8 @@ import (
 	"aplikasi_restoran/internal/dto"
 	helpers "aplikasi_restoran/internal/helper"
 	tableservice "aplikasi_restoran/internal/services/table"
-	"errors"
-	"fmt"
 	"net/http"
-
+	"strconv"
 	"github.com/gin-gonic/gin"
 )
 
@@ -21,87 +19,120 @@ func NewController(service tableservice.TableService) *TableController {
 
 func (c TableController) AddTable(ctx *gin.Context) {
 	var input dto.TableRequest
-	if err := ctx.ShouldBindJSON(&input); err != nil {
-		helpers.ResponseError(ctx, http.StatusBadRequest, err)
+
+	if !helpers.BindAndValidate(ctx, &input) {
 		return
 	}
 
 	table, err := c.service.AddTable(input.QrCode, input.Status)
-	if err != nil {
-		helpers.ResponseError(ctx, http.StatusBadRequest, err)
+	if !helpers.CheckError(ctx, err) {
 		return
 	}
 
-	helpers.ResponseSuccess(ctx, http.StatusOK, "Success Add Table", table)
+	response := dto.TableResponse{
+		Id:        table.ID,
+		TableCode: table.TableCode,
+		QrCode:    table.QrCode,
+		Status:    table.Status,
+	}
+
+	helpers.ResponseSuccess(ctx, http.StatusCreated, "Success Add Table", response)
 }
 
 func (c TableController) GetTable(ctx *gin.Context) {
 	idParam := ctx.Param("id")
-	if idParam == "" {
-		helpers.ResponseError(ctx, http.StatusBadRequest, errors.New("missing id"))
+	id, err := strconv.Atoi(idParam)
+	if !helpers.CheckError(ctx, err) {
 		return
 	}
 
-	var id uint
-	fmt.Sscan(idParam, &id)
-
-	table, err := c.service.GetTable(id)
-	if err != nil {
-		helpers.ResponseError(ctx, http.StatusNotFound, err)
+	table, err := c.service.GetTable(uint(id))
+	if !helpers.CheckError(ctx, err) {
 		return
 	}
 
-	helpers.ResponseSuccess(ctx, http.StatusOK, "Success Get Table", table)
+	response := dto.TableResponse{
+		Id:        table.ID,
+		TableCode: table.TableCode,
+		QrCode:    table.QrCode,
+		Status:    table.Status,
+	}
+
+	helpers.ResponseSuccess(ctx, http.StatusOK, "Success Get Table", response)
 }
 
 func (c TableController) GetAll(ctx *gin.Context) {
 	tables, err := c.service.GetAll()
-	if err != nil {
-		helpers.ResponseError(ctx, http.StatusInternalServerError, err)
+	if !helpers.CheckError(ctx, err) {
 		return
 	}
 
-	helpers.ResponseSuccess(ctx, http.StatusOK, "Success Get All Tables", tables)
+	var result []dto.TableResponse
+	for _, t := range tables {
+		result = append(result, dto.TableResponse{
+			Id:        t.ID,
+			TableCode: t.TableCode,
+			QrCode:    t.QrCode,
+			Status:    t.Status,
+		})
+	}
+
+	helpers.ResponseSuccess(ctx, http.StatusOK, "Success Get All Tables", result)
 }
 
 func (c TableController) UpdateTable(ctx *gin.Context) {
 	idParam := ctx.Param("id")
-	var id uint
-	fmt.Sscan(idParam, &id)
+	id, err := strconv.Atoi(idParam)
+	if !helpers.CheckError(ctx, err) {
+		return
+	}
 
 	var input dto.TableRequest
-	if err := ctx.ShouldBindJSON(&input); err != nil {
-		helpers.ResponseError(ctx, http.StatusBadRequest, err)
+	if !helpers.BindAndValidate(ctx, &input) {
 		return
 	}
 
-	table, err := c.service.UpdateTable(id, input.QrCode, input.Status)
-	if err != nil {
-		helpers.ResponseError(ctx, http.StatusBadRequest, err)
+	table, err := c.service.UpdateTable(uint(id), input.QrCode, input.Status)
+	if !helpers.CheckError(ctx, err) {
 		return
 	}
 
-	helpers.ResponseSuccess(ctx, http.StatusOK, "Success Update Table", table)
+	response := dto.TableResponse{
+		Id:        table.ID,
+		TableCode: table.TableCode,
+		QrCode:    table.QrCode,
+		Status:    table.Status,
+	}
+
+	helpers.ResponseSuccess(ctx, http.StatusOK, "Success Update Table", response)
 }
 
 func (c TableController) UpdateStatus(ctx *gin.Context) {
 	idParam := ctx.Param("id")
-	var id uint
-	fmt.Sscan(idParam, &id)
+	id, err := strconv.Atoi(idParam)
+	if !helpers.CheckError(ctx, err) {
+		return
+	}
 
 	var body struct {
-		Status bool `json:"status"`
+		Status bool `json:"status" binding:"required"`
 	}
-	if err := ctx.ShouldBindJSON(&body); err != nil {
-		helpers.ResponseError(ctx, http.StatusBadRequest, err)
+
+	if !helpers.BindAndValidate(ctx, &body) {
 		return
 	}
 
-	table, err := c.service.UpdateStatus(id, body.Status)
-	if err != nil {
-		helpers.ResponseError(ctx, http.StatusBadRequest, err)
+	table, err := c.service.UpdateStatus(uint(id), body.Status)
+	if !helpers.CheckError(ctx, err) {
 		return
 	}
 
-	helpers.ResponseSuccess(ctx, http.StatusOK, "Status Updated", table)
+	response := dto.TableResponse{
+		Id:        table.ID,
+		TableCode: table.TableCode,
+		QrCode:    table.QrCode,
+		Status:    table.Status,
+	}
+
+	helpers.ResponseSuccess(ctx, http.StatusOK, "Status Updated", response)
 }

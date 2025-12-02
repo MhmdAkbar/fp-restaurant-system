@@ -3,10 +3,10 @@ package usercontroller
 import (
 	"aplikasi_restoran/internal/dto"
 	helpers "aplikasi_restoran/internal/helper"
-	usermodels "aplikasi_restoran/internal/models/user"
+	"aplikasi_restoran/internal/models"
 	userservice "aplikasi_restoran/internal/services/user"
-	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,15 +22,12 @@ func NewController(service userservice.UserService) *UserController {
 func (c *UserController) Register(ctx *gin.Context) {
 	var input dto.RegisterRequest
 
-	if err := ctx.ShouldBindJSON(&input); err != nil {
-		helpers.ResponseError(ctx, http.StatusBadRequest, err)
+	if !helpers.BindAndValidate(ctx, &input) {
 		return
 	}
 
-	// Dapatkan user setelah insert
-	user, err := c.service.Register(input.Name, input.Email, input.Password, usermodels.UserRole(input.Role))
-	if err != nil {
-		helpers.ResponseError(ctx, http.StatusBadRequest, err)
+	user, err := c.service.Register(input.Name, input.Email, input.Password, models.UserRole(input.Role))
+	if !helpers.CheckError(ctx, err) {
 		return
 	}
 
@@ -41,25 +38,26 @@ func (c *UserController) Register(ctx *gin.Context) {
 		Role:  string(user.Role),
 	}
 
-	helpers.ResponseSuccess(ctx, http.StatusOK, "register sukses", result)
+	helpers.ResponseSuccess(ctx, http.StatusCreated, "register sukses", result)
 }
 
 func (c *UserController) Login(ctx *gin.Context) {
 	var input dto.LoginRequest
-	if err := ctx.ShouldBindJSON(&input); err != nil {
-		helpers.ResponseError(ctx, http.StatusBadRequest, err)
+
+	if !helpers.BindAndValidate(ctx, &input) {
 		return
 	}
 
 	user, err := c.service.Login(input.Email, input.Password)
-	if err != nil {
-		helpers.ResponseError(ctx, http.StatusUnauthorized, err)
+	if !helpers.CheckError(ctx, err) {
 		return
 	}
+
 	token, err := helpers.GenerateToken(user.ID, user.Name, user.Email, string(user.Role))
-	if err != nil {
-		helpers.ResponseError(ctx, http.StatusInternalServerError, err)
+	if !helpers.CheckError(ctx, err) {
+		return
 	}
+
 	result := dto.LoginResponse{
 		ID:    user.ID,
 		Name:  user.Name,
@@ -68,57 +66,44 @@ func (c *UserController) Login(ctx *gin.Context) {
 		Token: token,
 	}
 
-	helpers.ResponseSuccess(ctx, http.StatusOK, "success login", result)
+	helpers.ResponseSuccess(ctx, http.StatusOK, "login sukses", result)
 }
 
 func (c *UserController) GetProfile(ctx *gin.Context) {
 	idParam := ctx.Param("id")
-
-	if idParam == "" {
-		helpers.ResponseError(ctx, http.StatusBadRequest, fmt.Errorf("id wajib diisi"))
+	id, err := strconv.Atoi(idParam)
+	if !helpers.CheckError(ctx, err) {
 		return
 	}
 
-	var id uint
-	_, err := fmt.Sscan(idParam, &id)
-	if err != nil {
-		helpers.ResponseError(ctx, http.StatusBadRequest, fmt.Errorf("id tidak valid"))
+	user, err := c.service.GetProfile(uint(id))
+	if !helpers.CheckError(ctx, err) {
 		return
 	}
 
-	user, err := c.service.GetProfile(id)
-	if err != nil {
-		helpers.ResponseError(ctx, http.StatusNotFound, err)
-		return
+	result := dto.UpdateProfileResponse{
+		ID:    user.ID,
+		Name:  user.Name,
+		Email: user.Email,
 	}
 
-	helpers.ResponseSuccess(ctx, http.StatusOK, "success", user)
+	helpers.ResponseSuccess(ctx, http.StatusOK, "success", result)
 }
 
 func (c *UserController) UpdateProfile(ctx *gin.Context) {
 	idParam := ctx.Param("id")
-
-	if idParam == "" {
-		helpers.ResponseError(ctx, http.StatusBadRequest, fmt.Errorf("id wajib diisi"))
-		return
-	}
-
-	var id uint
-	_, err := fmt.Sscan(idParam, &id)
-	if err != nil {
-		helpers.ResponseError(ctx, http.StatusBadRequest, fmt.Errorf("id tidak valid"))
+	id, err := strconv.Atoi(idParam)
+	if !helpers.CheckError(ctx, err) {
 		return
 	}
 
 	var input dto.UpdateProfileRequest
-	if err := ctx.ShouldBindJSON(&input); err != nil {
-		helpers.ResponseError(ctx, http.StatusBadRequest, err)
+	if !helpers.BindAndValidate(ctx, &input) {
 		return
 	}
 
-	updated, err := c.service.UpdateProfile(id, input.Name, input.Email)
-	if err != nil {
-		helpers.ResponseError(ctx, http.StatusInternalServerError, err)
+	updated, err := c.service.UpdateProfile(uint(id), input.Name, input.Email)
+	if !helpers.CheckError(ctx, err) {
 		return
 	}
 
@@ -133,18 +118,15 @@ func (c *UserController) UpdateProfile(ctx *gin.Context) {
 
 func (c *UserController) DeleteProfile(ctx *gin.Context) {
 	idParam := ctx.Param("id")
-
-	if idParam == "" {
-		helpers.ResponseError(ctx, http.StatusBadRequest, fmt.Errorf("id wajib diisi"))
+	id, err := strconv.Atoi(idParam)
+	if !helpers.CheckError(ctx, err) {
 		return
 	}
 
-	var id uint
-	_, err := fmt.Sscan(idParam, &id)
-	if err != nil {
-		helpers.ResponseError(ctx, http.StatusBadRequest, fmt.Errorf("id tidak valid"))
+	err = c.service.DeleteProfile(uint(id))
+	if !helpers.CheckError(ctx, err) {
 		return
 	}
-	c.service.DeleteProfile(id)
+
 	helpers.ResponseSuccess(ctx, http.StatusOK, "success delete user", nil)
 }

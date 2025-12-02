@@ -1,11 +1,11 @@
 package repoitories
 
-import usermodels "aplikasi_restoran/internal/models/user"
+import "aplikasi_restoran/internal/models"
 
 type UserRepository interface { // definisi interface repository
-	Create(user *usermodels.User) error                 // buat user
-	FindByEmail(email string) (*usermodels.User, error) // cari user by email
-	FindByID(id uint) (*usermodels.User, error)         // cari user by id
-	Update(user *usermodels.User) error
-	Delete(user *usermodels.User) error
+	Create(user *models.User) error                 // buat user
+	FindByEmail(email string) (*models.User, error) // cari user by email
+	FindByID(id uint) (*models.User, error)         // cari user by id
+	Update(user *models.User) error
+	Delete(user *models.User) error
 }
