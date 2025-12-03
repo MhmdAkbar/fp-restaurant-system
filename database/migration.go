@@ -7,7 +7,7 @@ import (
 )
 
 func RunMigration(db *gorm.DB) { // fungsi menerima koneksi DB
-	err := db.AutoMigrate(&models.User{}, &models.Table{}, &models.Menu{})
+	err := db.AutoMigrate(&models.User{}, &models.Table{}, &models.Menu{}, &models.Order{}, &models.OrderDetail{})
 	if err != nil {
 		log.Fatal("gagal migrate user:", err) // log error kalau gagal
 	}

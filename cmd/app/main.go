@@ -8,6 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
+
 func main() {
 	config.Init()
 	db := database.NewMySqlConnection(config.GetDSN())
@@ -18,7 +19,8 @@ func main() {
 	r := gin.Default()
 	routes.UserRoutes(r, modules.UserController)
 	routes.TableRouter(r, modules.TableController)
-	routes.MenuRouter(r,modules.MenuController)
+	routes.MenuRouter(r, modules.MenuController)
+	routes.OrderRouter(r, modules.OrderController, modules.OrderDetailController)
 
 	r.Run(config.GetAppPort())
 }
