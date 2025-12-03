@@ -19,7 +19,7 @@ func NewOrderController(s orderservice.OrderService) *OrderController {
 }
 func (c OrderController) CreateOrder(ctx *gin.Context) {
 	var input dto.CustomerCreateOrderRequest
-    idTable, ok := helpers.ParseID(ctx)
+    idTable, ok := helpers.ParseID(ctx,"tabel_id")
     if !ok {
         return
     }
@@ -64,7 +64,7 @@ func (c OrderController) CreateOrder(ctx *gin.Context) {
 // }
 
 func (c OrderController) GetOrder(ctx *gin.Context) {
-	id, ok := helpers.ParseID(ctx)
+	id, ok := helpers.ParseID(ctx,"order_id")
 	if !ok {
 		return
 	}

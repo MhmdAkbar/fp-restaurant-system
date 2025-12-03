@@ -13,12 +13,12 @@ func OrderRouter(r *gin.Engine, oc *ordercontroller.OrderController, odc *orderd
 	// Routes untuk admin & waiter (akses internal restoran)
 	order := r.Group("/orders")
 	{
-		order.POST("/:id", oc.CreateOrder)
-		order.POST("/:id/details", odc.AddDetail)	
+		order.POST("/:order_id", oc.CreateOrder)
+		order.POST("/:order_id/details", odc.AddDetail)	
 	}
 
 	cashier := order.Use(middlewares.AuthMiddleware(), middlewares.Role("cashier"))
 	{
-		cashier.GET("/detail/:id", oc.GetOrder)
+		cashier.GET("/detail/:order_id", oc.GetOrder)
 	}
 }

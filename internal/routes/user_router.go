@@ -16,8 +16,8 @@ func UserRoutes(r *gin.Engine, uc *usercontroller.UserController) {
 	usersAuth := users.Group("")
 	usersAuth.Use(middlewares.AuthMiddleware())
 	{
-		usersAuth.GET("/:id", middlewares.VerifyUserAccess(), uc.GetProfile)
-		usersAuth.PATCH("/:id", middlewares.VerifyUserAccess(), uc.UpdateProfile)
+		usersAuth.GET("/:user_id", middlewares.VerifyUserAccess(), uc.GetProfile)
+		usersAuth.PATCH("/:user_id", middlewares.VerifyUserAccess(), uc.UpdateProfile)
 	}
 
 	// Super admin only
@@ -25,6 +25,6 @@ func UserRoutes(r *gin.Engine, uc *usercontroller.UserController) {
 	admin.Use(middlewares.AuthMiddleware(), middlewares.Role("super_admin"))
 	{
 		admin.POST("", uc.Register)     // Create new user
-		admin.DELETE("/:id", uc.DeleteProfile)
+		admin.DELETE("/:user_id", uc.DeleteProfile)
 	}
 }

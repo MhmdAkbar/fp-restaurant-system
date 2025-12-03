@@ -5,7 +5,7 @@ import (
 	helpers "aplikasi_restoran/internal/helper"
 	tableservice "aplikasi_restoran/internal/services/table"
 	"net/http"
-	"strconv"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -40,9 +40,8 @@ func (c TableController) AddTable(ctx *gin.Context) {
 }
 
 func (c TableController) GetTable(ctx *gin.Context) {
-	idParam := ctx.Param("id")
-	id, err := strconv.Atoi(idParam)
-	if !helpers.CheckError(ctx, err) {
+	id, ok := helpers.ParseID(ctx, "table_id")
+	if !ok {
 		return
 	}
 
@@ -81,9 +80,8 @@ func (c TableController) GetAll(ctx *gin.Context) {
 }
 
 func (c TableController) UpdateTable(ctx *gin.Context) {
-	idParam := ctx.Param("id")
-	id, err := strconv.Atoi(idParam)
-	if !helpers.CheckError(ctx, err) {
+	id, ok := helpers.ParseID(ctx, "table_id")
+	if !ok {
 		return
 	}
 
@@ -108,9 +106,8 @@ func (c TableController) UpdateTable(ctx *gin.Context) {
 }
 
 func (c TableController) UpdateStatus(ctx *gin.Context) {
-	idParam := ctx.Param("id")
-	id, err := strconv.Atoi(idParam)
-	if !helpers.CheckError(ctx, err) {
+	id, ok := helpers.ParseID(ctx, "table_id")
+	if !ok {
 		return
 	}
 

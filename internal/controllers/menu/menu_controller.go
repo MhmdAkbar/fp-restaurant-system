@@ -45,7 +45,7 @@ func (c MenuController) GetAllMenu(ctx *gin.Context) {
 }
 
 func (c MenuController) GetMenu(ctx *gin.Context) {
-	id, ok := helpers.ParseID(ctx)
+	id, ok := helpers.ParseID(ctx, "menu_id")
 	if !ok {
 		return
 	}
@@ -60,7 +60,7 @@ func (c MenuController) GetMenu(ctx *gin.Context) {
 }
 
 func (c MenuController) UpdateMenu(ctx *gin.Context) {
-	id, ok := helpers.ParseID(ctx)
+	id, ok := helpers.ParseID(ctx, "menu_id")
 	if !ok {
 		return
 	}
@@ -81,7 +81,7 @@ func (c MenuController) UpdateMenu(ctx *gin.Context) {
 	helpers.ResponseSuccess(ctx, http.StatusOK, "Success Update Menu", updated)
 }
 func (c MenuController) DeleteMenu(ctx *gin.Context) {
-    id, ok := helpers.ParseID(ctx)
+    id, ok := helpers.ParseID(ctx, "menu_id")
     if !ok {
         return
     }

@@ -16,9 +16,9 @@ func TableRouter(r *gin.Engine, tc *tablecontroller.TableController) {
 	{
 		table.POST("", tc.AddTable)                                // Create
 		table.GET("", tc.GetAll)                                   // Get All Tables
-		table.GET("/:id", tc.GetTable)                             // Get Single Table
-		table.PATCH("/:id", tc.UpdateTable)                        // Update Full
-		table.PATCH("/:id/status", tc.UpdateStatus)                // Update Hanya Status
+		table.GET("/:table_id", tc.GetTable)                             // Get Single Table
+		table.PATCH("/:table_id", tc.UpdateTable)                        // Update Full
+		table.PATCH("/:table_id/status", tc.UpdateStatus)                // Update Hanya Status
 		// table.DELETE("/:id", tc.DeleteTable)                    // Soft/Hard Delete (optional)
 	}
 }

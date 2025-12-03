@@ -15,8 +15,8 @@ func MenuRouter(r *gin.Engine, mc *menucontroller.MenuController) {
 	{
 		menu.POST("", mc.AddMenu)          // tambah menu
 		menu.GET("", mc.GetAllMenu)        // list semua menu
-		menu.GET("/:id", mc.GetMenu)       // detail menu
-		menu.PATCH("/:id", mc.UpdateMenu)  // update menu
-		menu.DELETE("/:id", mc.DeleteMenu) // hapus menu
+		menu.GET("/:menu_id", mc.GetMenu)       // detail menu
+		menu.PATCH("/:menu_id", mc.UpdateMenu)  // update menu
+		menu.DELETE("/:menu_id", mc.DeleteMenu) // hapus menu
 	}
 }

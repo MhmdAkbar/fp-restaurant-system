@@ -8,8 +8,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func ParseID(ctx *gin.Context) (uint, bool) {
-	idParam := ctx.Param("id")
+func ParseID(ctx *gin.Context, param string) (uint, bool) {
+	idParam := ctx.Param(param)
 	if idParam == "" {
 		ResponseError(ctx, http.StatusBadRequest, errors.New("missing id"))
 		return 0, false

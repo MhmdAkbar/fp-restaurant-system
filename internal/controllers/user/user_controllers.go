@@ -6,7 +6,6 @@ import (
 	"aplikasi_restoran/internal/models"
 	userservice "aplikasi_restoran/internal/services/user"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -70,9 +69,8 @@ func (c *UserController) Login(ctx *gin.Context) {
 }
 
 func (c *UserController) GetProfile(ctx *gin.Context) {
-	idParam := ctx.Param("id")
-	id, err := strconv.Atoi(idParam)
-	if !helpers.CheckError(ctx, err) {
+	id, ok := helpers.ParseID(ctx, "user_id")
+	if !ok {
 		return
 	}
 
@@ -91,9 +89,8 @@ func (c *UserController) GetProfile(ctx *gin.Context) {
 }
 
 func (c *UserController) UpdateProfile(ctx *gin.Context) {
-	idParam := ctx.Param("id")
-	id, err := strconv.Atoi(idParam)
-	if !helpers.CheckError(ctx, err) {
+	id, ok := helpers.ParseID(ctx, "user_id")
+	if !ok {
 		return
 	}
 
@@ -117,13 +114,12 @@ func (c *UserController) UpdateProfile(ctx *gin.Context) {
 }
 
 func (c *UserController) DeleteProfile(ctx *gin.Context) {
-	idParam := ctx.Param("id")
-	id, err := strconv.Atoi(idParam)
-	if !helpers.CheckError(ctx, err) {
+	id, ok := helpers.ParseID(ctx, "user_id")
+	if !ok {
 		return
 	}
 
-	err = c.service.DeleteProfile(uint(id))
+	err := c.service.DeleteProfile(uint(id))
 	if !helpers.CheckError(ctx, err) {
 		return
 	}
