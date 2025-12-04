@@ -5,11 +5,11 @@ import "aplikasi_restoran/internal/models"
 // REQUEST DTO =========================
 
 type CustomerCreateOrderRequest struct {
-	TableId   uint               `json:"table_id" binding:"required"`
-	Name    string               `json:"name" binding:"required"`
-	OrderType models.OrderType   `json:"order_type" binding:"required,oneof=dine_in take_away"`
-	Status    models.OrderStatus `json:"status" binding:"required,oneof=scanned cooking ready served done"`
-	Details []CreateOrderDetail `json:"details" binding:"required,dive"`
+	TableId   uint                `json:"table_id" binding:"required"`
+	Name      string              `json:"name" binding:"required"`
+	OrderType models.OrderType    `json:"order_type" binding:"required,oneof=dine_in take_away"`
+	Status    models.OrderStatus  `json:"status" binding:"required,oneof=scanned cooking ready served done"`
+	Details   []CreateOrderDetail `json:"details" binding:"required,dive"`
 }
 
 type CreateOrderDetail struct {
@@ -26,7 +26,7 @@ type UpdateOrderStatusRequest struct {
 type OrderResponse struct {
 	ID            uint                  `json:"id"`
 	TableId       uint                  `json:"table_id"`
-	// UserId        uint                  `json:"user_id"`
+	Name          string                `json:"name" binding:"required"`
 	OrderType     models.OrderType      `json:"order_type"`
 	Status        models.OrderStatus    `json:"status"`
 	Subtotal      float64               `json:"subtotal"`

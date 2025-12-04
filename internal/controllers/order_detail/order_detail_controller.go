@@ -44,37 +44,3 @@ func (c OrderDetailController) AddDetail(ctx *gin.Context) {
 
 	helpers.ResponseSuccess(ctx, http.StatusCreated, "Detail added", response)
 }
-
-// func (c OrderDetailController) UpdateDetail(ctx *gin.Context) {
-// 	detailID, ok := helpers.ParseID(ctx)
-// 	if !ok {
-// 		return
-// 	}
-
-// 	var input dto.UpdateOrderDetailRequest
-// 	if !helpers.BindAndValidate(ctx, &input) {
-// 		return
-// 	}
-
-// 	detail, err := c.service.UpdateDetail(detailID, input.Quantity)
-// 	if err != nil {
-// 		helpers.ResponseError(ctx, http.StatusBadRequest, err)
-// 		return
-// 	}
-
-// 	helpers.ResponseSuccess(ctx, http.StatusOK, "Detail updated", detail)
-// }
-
-// func (c OrderDetailController) DeleteDetail(ctx *gin.Context) {
-// 	detailID, ok := helpers.ParseID(ctx)
-// 	if !ok {
-// 		return
-// 	}
-
-// 	if err := c.service.DeleteDetail(detailID); err != nil {
-// 		helpers.ResponseError(ctx, http.StatusBadRequest, err)
-// 		return
-// 	}
-
-// 	helpers.ResponseSuccess(ctx, http.StatusOK, "Detail deleted", nil)
-// }

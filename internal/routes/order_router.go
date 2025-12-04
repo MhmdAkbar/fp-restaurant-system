@@ -1,24 +1,41 @@
 package routes
 
 import (
-	ordercontroller "aplikasi_restoran/internal/controllers/order"
-	orderdetailcontroller "aplikasi_restoran/internal/controllers/order_detail"
-	"aplikasi_restoran/internal/middlewares"
+    ordercontroller "aplikasi_restoran/internal/controllers/order"
+    orderdetailcontroller "aplikasi_restoran/internal/controllers/order_detail"
+    "aplikasi_restoran/internal/middlewares"
 
-	"github.com/gin-gonic/gin"
+    "github.com/gin-gonic/gin"
 )
 
 func OrderRouter(r *gin.Engine, oc *ordercontroller.OrderController, odc *orderdetailcontroller.OrderDetailController) {
 
-	// Routes untuk admin & waiter (akses internal restoran)
-	order := r.Group("/orders")
-	{
-		order.POST("/:order_id", oc.CreateOrder)
-		order.POST("/:order_id/details", odc.AddDetail)	
-	}
+    // =========================
+    // Public/Internal Order Route
+    // =========================
+    order := r.Group("/orders")
+    {
+        // Add detail to order (waiter or system)
+        order.POST("/:order_id/details", odc.AddDetail)
+    }
 
-	cashier := order.Use(middlewares.AuthMiddleware(), middlewares.Role("cashier"))
-	{
-		cashier.GET("/detail/:order_id", oc.GetOrder)
-	}
+    // =========================
+    // Cashier Routes (Full Update)
+    // =========================
+    cashier := order.Group("")
+    cashier.Use(middlewares.AuthMiddleware(), middlewares.Role("cashier"))
+    {
+        cashier.GET("/detail/:order_id", oc.GetOrder)   // lihat order
+
+        // cashier.PUT("/:order_id", oc.UpdateOrder)       // cashier update isi pesanan
+    }
+
+    // =========================
+    // Waiter Routes (Status Only)
+    // =========================
+    waiter := order.Group("")
+    waiter.Use(middlewares.AuthMiddleware(), middlewares.Role("waiter"))
+    {
+        waiter.PATCH("/:order_id/status", oc.UpdateStatus) // waiter update status
+    }
 }

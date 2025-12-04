@@ -18,7 +18,7 @@ func main() {
 
 	r := gin.Default()
 	routes.UserRoutes(r, modules.UserController)
-	routes.TableRouter(r, modules.TableController)
+	routes.TableRouter(r, modules.TableController, modules.OrderController)
 	routes.MenuRouter(r, modules.MenuController)
 	routes.OrderRouter(r, modules.OrderController, modules.OrderDetailController)
 

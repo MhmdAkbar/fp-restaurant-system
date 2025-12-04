@@ -17,8 +17,14 @@ func (r *orderDetailRepo) Create(detail *models.OrderDetail) (*models.OrderDetai
 	if err := r.db.Create(detail).Error; err != nil {
 		return nil, err
 	}
+
+	// Preload Menu setelah create
+	if err := r.db.Preload("Menu").First(detail, detail.ID).Error; err != nil {
+		return nil, err
+	}
 	return detail, nil
 }
+
 
 
 func (r *orderDetailRepo) GetByOrderID(orderID uint) ([]models.OrderDetail, error) {

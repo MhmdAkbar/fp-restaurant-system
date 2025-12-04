@@ -14,17 +14,17 @@ type AddOrderDetailRequest struct {
 
 // RESPONSE DTO =========================
 type SimpleMenu struct {
-    Name  string  `json:"name"`
-    Price float64 `json:"price"`
+	Name  string  `json:"name"`
+	Price float64 `json:"price"`
 }
 
 type OrderDetailResponse struct {
-    ID       uint       `json:"id"`
-    OrderId  uint       `json:"order_id"`
-    MenuId   uint       `json:"menu_id"`
-    Quantity uint       `json:"quantity"`
-    Price    float64    `json:"price"`
-    Total    float64    `json:"total"`
-    Menu     SimpleMenu `json:"menu"`
+	ID       uint       `json:"id"`
+	OrderId  uint       `json:"order_id"`
+	Name     string     `json:"name"`
+	MenuId   uint       `json:"menu_id"`
+	Quantity uint       `json:"quantity"`
+	Price    float64    `json:"price"`
+	Total    float64    `json:"total"`
+	Menu     SimpleMenu `json:"menu"`
 }
-

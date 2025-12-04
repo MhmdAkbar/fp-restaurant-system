@@ -24,7 +24,7 @@ func (c TableController) AddTable(ctx *gin.Context) {
 		return
 	}
 
-	table, err := c.service.AddTable(input.QrCode, input.Status)
+	table, err := c.service.AddTable(input.QrCode)
 	if !helpers.CheckError(ctx, err) {
 		return
 	}
@@ -90,7 +90,7 @@ func (c TableController) UpdateTable(ctx *gin.Context) {
 		return
 	}
 
-	table, err := c.service.UpdateTable(uint(id), input.QrCode, input.Status)
+	table, err := c.service.UpdateTable(uint(id), input.QrCode)
 	if !helpers.CheckError(ctx, err) {
 		return
 	}

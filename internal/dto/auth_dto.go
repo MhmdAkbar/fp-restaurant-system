@@ -43,7 +43,14 @@ type TableRequest struct {
 	Id        uint   `json:"id"`
 	TableCode string `json:"table_code"`
 	QrCode    string `json:"qr_code"`
-	Status    bool   `json:"status"`
+}
+type TableUpdateRequest struct {
+	Id        uint   `json:"id"`
+	TableCode string `json:"table_code"`
+	QrCode    string `json:"qr_code"`
+}
+type TableStatusUpdate struct {
+	Id uint `json:"id"`
 }
 
 type TableResponse struct {

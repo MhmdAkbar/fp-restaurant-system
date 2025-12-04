@@ -15,10 +15,9 @@ func NewTableService(repo tablerepository.TableRepository) TableService {
 	return &tableService{repo}
 }
 
-func (s *tableService) AddTable(qrCode string, status bool) (*models.Table, error) {
+func (s *tableService) AddTable(qrCode string) (*models.Table, error) {
 	table := models.Table{
 		QrCode: qrCode,
-		Status: status,
 	}
 
 	// Step 1: Create
@@ -45,24 +44,29 @@ func (s *tableService) GetAll() ([]models.Table, error) {
 	return s.repo.FindAll()
 }
 
-func (s *tableService) UpdateTable(id uint, qrCode string, status bool) (*models.Table, error) {
+func (s *tableService) UpdateTable(id uint, qrCode string) (*models.Table, error) {
 	table, err := s.repo.FindById(id)
 	if err != nil {
 		return nil, err
 	}
 
 	table.QrCode = qrCode
-	table.Status = status
 
 	return table, s.repo.Update(table)
 }
-
 func (s *tableService) UpdateStatus(id uint, status bool) (*models.Table, error) {
-	table, err := s.repo.FindById(id)
-	if err != nil {
-		return nil, err
-	}
+    table, err := s.repo.FindById(id)
+    if err != nil {
+        return nil, err
+    }
 
-	table.Status = status
-	return table, s.repo.Update(table)
+    table.Status = status
+
+    // WAJIB SIMPAN KE DB!!
+    if err := s.repo.Update(table); err != nil {
+        return nil, err
+    }
+
+    return table, nil
 }
+
