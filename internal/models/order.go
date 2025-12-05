@@ -9,11 +9,12 @@ import (
 type OrderStatus string
 
 const (
+	
+	OrderScanned OrderStatus = "scanned"
 	OrderReady   OrderStatus = "ready"
 	OrderCooking OrderStatus = "cooking"
 	OrderServed  OrderStatus = "served"
-	OrderDone    OrderStatus = "done"
-	OrderScanned OrderStatus = "scanned"
+	OrderDone OrderStatus = "done"
 )
 
 type OrderType string
@@ -34,8 +35,12 @@ type Order struct {
 	ServiceCharge float64       `gorm:"type:decimal(12,2);default:0"`
 	Discount      float64       `gorm:"type:decimal(12,2);default:0"`
 	GrandTotal    float64       `gorm:"type:decimal(12,2);default:0"`
-	Details       []OrderDetail `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"details"`
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
-	DeletedAt     gorm.DeletedAt `gorm:"index"`
+
+	Details   []OrderDetail `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"details"`
+	Payments  []Payment     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"payments"`
+
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
+

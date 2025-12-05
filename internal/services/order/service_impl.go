@@ -85,11 +85,7 @@ func (s *orderService) UpdateStatus(id uint, status models.OrderStatus) error {
 	}
 
 	// Jika order selesai → meja dikosongkan
-	if status == models.OrderDone {
-		table, _ := s.tableRepo.FindById(order.TableId)
-		table.Status = false
-		_ = s.tableRepo.Update(table)
-	}
+	
 
 	return nil
 }

@@ -21,6 +21,7 @@ func main() {
 	routes.TableRouter(r, modules.TableController, modules.OrderController)
 	routes.MenuRouter(r, modules.MenuController)
 	routes.OrderRouter(r, modules.OrderController, modules.OrderDetailController)
+	routes.PaymentRouter(r, modules.PaymentController)
 
 	r.Run(config.GetAppPort())
 }
