@@ -55,7 +55,7 @@ func InitModules(db *gorm.DB) *AppModule {
 
 	paymentRepo := paymentrepository.NewPaymentRepository(db)
 	paymentservice:= paymentservice.NewPaymentService(paymentRepo, tableRepo)
-	paymentcontroller := paymentcontroller.NewPaymentController(paymentservice)
+	paymentcontroller := paymentcontroller.NewPaymentController(paymentservice, orderService)
 
 	return &AppModule{
 		UserController:        userController,

@@ -4,6 +4,7 @@ import (
 	"aplikasi_restoran/internal/models"
 	paymentrepository "aplikasi_restoran/internal/repositories/payment"
 	tablerepository "aplikasi_restoran/internal/repositories/table"
+	"errors"
 )
 
 type paymentService struct {
@@ -24,6 +25,9 @@ func (s *paymentService) CreatePayment(orderId uint, cashierId uint, method mode
 
 	// Siapkan pointer untuk orderID
 	orderID := order.ID
+	if order.Status == models.OrderDone{
+		return nil , errors.New("this order has been paid")
+	}
 
 	// Buat pembayaran langsung lunas
 	payment := models.Payment{
