@@ -10,32 +10,26 @@ import (
 
 func OrderRouter(r *gin.Engine, oc *ordercontroller.OrderController, odc *orderdetailcontroller.OrderDetailController) {
 
-    // =========================
-    // Public/Internal Order Route
-    // =========================
+    // Public: tambah detail ke order
     order := r.Group("/orders")
     {
-        // Add detail to order (waiter or system)
         order.POST("/:order_id/details", odc.AddDetail)
     }
 
-    // =========================
-    // Cashier Routes (Full Update)
-    // =========================
+    // Cashier: akses penuh ke order
     cashier := order.Group("")
     cashier.Use(middlewares.AuthMiddleware(), middlewares.Role("cashier"))
     {
-        cashier.GET("/detail/:order_id", oc.GetOrder)   // lihat order
-
-        // cashier.PUT("/:order_id", oc.UpdateOrder)       // cashier update isi pesanan
+        cashier.GET("/:order_id", oc.GetOrder)             // lihat order
+        cashier.PUT("/details/:detail_id", odc.UpdateDetail) // update qty detail
+        cashier.DELETE("/details/:detail_id", odc.DeleteDetail) // hapus detail
+        cashier.PUT("/:order_id", oc.UpdateOrder)          // update keseluruhan order
     }
 
-    // =========================
-    // Waiter Routes (Status Only)
-    // =========================
+    // Waiter: hanya update status
     waiter := order.Group("")
     waiter.Use(middlewares.AuthMiddleware(), middlewares.Role("waiter"))
     {
-        waiter.PATCH("/:order_id/status", oc.UpdateStatus) // waiter update status
+        waiter.PATCH("/:order_id/status", oc.UpdateStatus)
     }
 }

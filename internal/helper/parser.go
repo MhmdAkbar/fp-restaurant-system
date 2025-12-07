@@ -9,15 +9,17 @@ import (
 )
 
 func ParseID(ctx *gin.Context, param string) (uint, bool) {
+	
+	missingIdMessage := "missing " + param
 	idParam := ctx.Param(param)
 	if idParam == "" {
-		ResponseError(ctx, http.StatusBadRequest, errors.New("missing id"))
+		ResponseError(ctx, http.StatusBadRequest, errors.New(missingIdMessage))
 		return 0, false
 	}
-
+	invalidIdMessage := "invalid " + param
 	idInt, err := strconv.Atoi(idParam)
 	if err != nil || idInt <= 0 {
-		ResponseError(ctx, http.StatusBadRequest, errors.New("invalid id"))
+		ResponseError(ctx, http.StatusBadRequest, errors.New(invalidIdMessage))
 		return 0, false
 	}
 
