@@ -3,7 +3,7 @@ package dto
 // REQUEST DTO =========================
 
 type UpdateOrderDetailRequest struct {
-	Quantity uint `json:"quantity" binding:"required,min=1"`
+	Quantity *uint `json:"quantity" binding:"required,min=0"`
 }
 
 type AddOrderDetailRequest struct {
@@ -21,7 +21,6 @@ type SimpleMenu struct {
 type OrderDetailResponse struct {
 	ID       uint       `json:"id"`
 	OrderId  uint       `json:"order_id"`
-	Name     string     `json:"name"`
 	MenuId   uint       `json:"menu_id"`
 	Quantity uint       `json:"quantity"`
 	Price    float64    `json:"price"`

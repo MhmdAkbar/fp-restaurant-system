@@ -23,7 +23,7 @@ func OrderRouter(r *gin.Engine, oc *ordercontroller.OrderController, odc *orderd
         cashier.GET("/:order_id", oc.GetOrder)             // lihat order
         cashier.PUT("/details/:detail_id", odc.UpdateDetail) // update qty detail
         cashier.DELETE("/details/:detail_id", odc.DeleteDetail) // hapus detail
-        cashier.PUT("/:order_id", oc.UpdateOrder)          // update keseluruhan order
+        // cashier.PUT("/:order_id", oc.UpdateOrder)          // update keseluruhan order
     }
 
     // Waiter: hanya update status

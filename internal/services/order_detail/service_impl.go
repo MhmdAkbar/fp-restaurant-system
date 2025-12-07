@@ -52,6 +52,7 @@ func (s *orderDetailService) AddDetail(input dto.AddOrderDetailRequest) (*models
 
 	return newDetail, nil
 }
+
 func (s *orderDetailService) UpdateDetail(detailID uint, qty uint) (*models.OrderDetail, error) {
 	// Ambil detail lama
 	detail, err := s.repo.GetByID(detailID)
@@ -59,16 +60,9 @@ func (s *orderDetailService) UpdateDetail(detailID uint, qty uint) (*models.Orde
 		return nil, err
 	}
 
-	// Jika qty 0 -> hapus detail saja
+	// Jika qty 0 -> controller yang handle delete
 	if qty == 0 {
-		if err := s.repo.Delete(detailID); err != nil {
-			return nil, err
-		}
-		// Recalculate setelah delete
-		if err := s.orderService.RecalculateOrder(detail.OrderId); err != nil {
-			return nil, err
-		}
-		return nil, nil // item sudah tidak ada, jadi return nil
+		return nil, nil
 	}
 
 	// Ambil harga menu terbaru
@@ -91,9 +85,14 @@ func (s *orderDetailService) UpdateDetail(detailID uint, qty uint) (*models.Orde
 		return nil, err
 	}
 
-	// Return detail terbaru
-	return s.repo.GetByID(detail.ID)
+	// Return detail terbaru + preload menu
+	updated, err := s.repo.GetByID(detail.ID)
+	if err != nil {
+		return nil, err
+	}
+	return updated, nil
 }
+
 
 func (s *orderDetailService) DeleteDetail(detailID uint) error {
 	detail, err := s.repo.GetByID(detailID)

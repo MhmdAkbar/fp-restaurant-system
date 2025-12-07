@@ -1,4 +1,4 @@
-package ordercontroller
+package orderdetailcontroller
 
 import (
 	"aplikasi_restoran/internal/dto"
@@ -47,7 +47,7 @@ func (c OrderDetailController) AddDetail(ctx *gin.Context) {
 
 func (c OrderDetailController) UpdateDetail(ctx *gin.Context) {
 	// Ambil param ID dari URL
-	detailID, ok := helpers.ParseID(ctx, "order_id")
+	detailID, ok := helpers.ParseID(ctx, "detail_id")
 	if !ok {
 		return
 	}
@@ -58,16 +58,15 @@ func (c OrderDetailController) UpdateDetail(ctx *gin.Context) {
 		return
 	}
 
-	// Update via service
-	updatedDetail, err := c.service.UpdateDetail(detailID, input.Quantity)
+	updatedDetail, err := c.service.UpdateDetail(detailID, *input.Quantity)
 	if err != nil {
 		helpers.ResponseError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
-	// Jika qty 0 -> detail telah dihapus
 	if updatedDetail == nil {
-		helpers.ResponseSuccess(ctx, http.StatusOK, "Detail deleted", nil)
+		_ = c.service.DeleteDetail(detailID)
+		helpers.ResponseSuccess(ctx, http.StatusOK, "Order detail deleted", nil)
 		return
 	}
 

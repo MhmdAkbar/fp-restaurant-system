@@ -20,7 +20,6 @@ func MapOrderDetails(details []models.OrderDetail) []dto.OrderDetailResponse {
 		res = append(res, dto.OrderDetailResponse{
 			ID:       d.ID,
 			OrderId:  d.OrderId,
-			Name:     d.Name,
 			MenuId:   d.MenuId,
 			Quantity: d.Quantity,
 			Price:    d.Price,
