@@ -3,6 +3,7 @@ package ordercontroller
 import (
 	"aplikasi_restoran/internal/dto"
 	helpers "aplikasi_restoran/internal/helper"
+	"aplikasi_restoran/internal/models"
 	orderservice "aplikasi_restoran/internal/services/order"
 	"errors"
 	"net/http"
@@ -67,7 +68,11 @@ func (c *OrderController) UpdateStatus(ctx *gin.Context) {
 	if !helpers.BindAndValidate(ctx, &req) {
 		return
 	}
-
+	order, _ := c.orderService.GetOrder(id)
+	if order.Status == models.OrderDone {
+		helpers.ResponseError(ctx, http.StatusConflict, errors.New("this order has been paid, can't update status"))
+		return
+	}
 	if err := c.orderService.UpdateStatus(id, req.Status); err != nil {
 		helpers.ResponseError(ctx, http.StatusInternalServerError, err)
 		return

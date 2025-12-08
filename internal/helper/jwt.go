@@ -19,7 +19,7 @@ func GenerateToken(id uint, name string, email string, role string) (string, err
 		Email: email,
 		Role:  role,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)), // Token 24 jam // pindahkan ke dot env
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 240)), // Token 24 jam // pindahkan ke dot env
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
 	}

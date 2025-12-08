@@ -72,6 +72,11 @@ func (c OrderDetailController) UpdateDetail(ctx *gin.Context) {
 	}
 
 	updatedDetail, err := c.service.UpdateDetail(detailID, *input.Quantity)
+	order, _ := c.orderService.GetOrder(updatedDetail.OrderId)
+	if order.Status == models.OrderDone {
+		helpers.ResponseError(ctx, http.StatusConflict, errors.New("this order has been paid, can't add detail"))
+		return
+	}
 	if err != nil {
 		helpers.ResponseError(ctx, http.StatusBadRequest, err)
 		return
