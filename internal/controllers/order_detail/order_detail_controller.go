@@ -3,18 +3,25 @@ package orderdetailcontroller
 import (
 	"aplikasi_restoran/internal/dto"
 	helpers "aplikasi_restoran/internal/helper"
+	"aplikasi_restoran/internal/models"
+	orderservice "aplikasi_restoran/internal/services/order"
 	orderdetailservice "aplikasi_restoran/internal/services/order_detail"
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 type OrderDetailController struct {
-	service orderdetailservice.OrderDetailService
+	service      orderdetailservice.OrderDetailService
+	orderService orderservice.OrderService
 }
 
-func NewOrderDetailController(s orderdetailservice.OrderDetailService) *OrderDetailController {
-	return &OrderDetailController{service: s}
+func NewOrderDetailController(s orderdetailservice.OrderDetailService, os orderservice.OrderService) *OrderDetailController {
+	return &OrderDetailController{
+		service:      s,
+		orderService: os,
+	}
 }
 
 func (c OrderDetailController) AddDetail(ctx *gin.Context) {
@@ -25,6 +32,12 @@ func (c OrderDetailController) AddDetail(ctx *gin.Context) {
 	}
 
 	detail, err := c.service.AddDetail(input)
+	//cek apakah order sudah dibayar
+	order, _ := c.orderService.GetOrder(input.OrderId)
+	if order.Status == models.OrderDone {
+		helpers.ResponseError(ctx, http.StatusConflict, errors.New("this order has been paid, can't add detail"))
+		return
+	}
 	if err != nil {
 		helpers.ResponseError(ctx, http.StatusBadRequest, err)
 		return
